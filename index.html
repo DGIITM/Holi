@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rang Utsav – Celebrating Holi with Divyanshu</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Samarkan&display=swap"
+    rel="stylesheet">
+  <!-- GSAP for smooth animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --pink: #FF2E63;
+      --yellow: #FFD93D;
+      --blue: #1E90FF;
+      --purple: #7B2CBF;
+      --orange: #FF7F11;
+      --bg-dark: #0f0c29;
+      --bg-mid: #302b63;
+      --bg-light: #24243e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      /* Prevent scrolling for the cinematic intro */
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-dark);
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* --- BACKGROUND CANVAS FOR EXPLOSIONS --- */
+    #explosionCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* --- SECTION 1 CONTAINER --- */
+    #section-1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    /* --- TEXT STYLES --- */
+    .intro-text-wrapper {
+      position: relative;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .text-happy-holi {
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: linear-gradient(45deg, var(--pink), var(--yellow), var(--blue), var(--orange));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      white-space: nowrap;
+      text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .text-welcome {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 600;
+      opacity: 0;
+      text-align: center;
+      line-height: 1.2;
+      text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+      margin-top: -20px;
+    }
+
+    .text-divyanshu {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--purple), var(--pink), var(--orange));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: block;
+      margin-top: 10px;
+    }
+
+    /* --- FLOATING PARTICLES --- */
+    .particles-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .petal {
+      position: absolute;
+      font-size: 1.5rem;
+      user-select: none;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
+
+    .gulal {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(4px);
+      opacity: 0.6;
+      animation: float linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-10vh) rotate(0deg) translateX(0px);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.8;
+      }
+
+      90% {
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(360deg) translateX(50px);
+        opacity: 0;
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(110vh) scale(1);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.6;
+      }
+
+      90% {
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: translateY(-10vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* --- MUSIC TOGGLE --- */
+    #music-toggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    #music-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* --- PROCEED BUTTON (To go to next section) --- */
+    #btn-start {
+      margin-top: 40px;
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, var(--pink), var(--orange));
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255, 46, 99, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      /* Enabled after intro */
+    }
+
+    #btn-start:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(255, 46, 99, 0.6);
+    }
+
+    /* --- SECTION 2 STYLES --- */
+    #section-2,
+    #section-2b {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .name-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    .name-prompt {
+      font-size: 1.4rem;
+      margin-bottom: 30px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    #visitor-name {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 1.2rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      outline: none;
+      text-align: center;
+      margin-bottom: 25px;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s;
+    }
+
+    #visitor-name:focus {
+      border-color: var(--yellow);
+    }
+
+    #visitor-name::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    #btn-submit-name {
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, var(--blue), var(--purple));
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(123, 44, 191, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    #btn-submit-name:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(123, 44, 191, 0.6);
+    }
+
+    /* --- SWEET LETTERS --- */
+    .sweet-name-container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .sweet-letter-box {
+      width: clamp(50px, 8vw, 80px);
+      height: clamp(60px, 10vw, 100px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .sweet-letter-char {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 800;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      z-index: 2;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .sweet-emoji-bg {
+      font-size: clamp(3rem, 6vw, 5rem);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      opacity: 0.8;
+      filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4));
+    }
+
+    /* Splash behind letters */
+    .letter-splash {
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      border-radius: 50%;
+      z-index: 0;
+      filter: blur(10px);
+      opacity: 0.7;
+    }
+
+    /* --- SECTION 3 STYLES (SWEET SELECTION) --- */
+    #section-3 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    .sweets-selection-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 900px;
+      padding: 20px;
+    }
+
+    .sweet-choice-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px 20px;
+      width: 160px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      animation: floatSweet 4s ease-in-out infinite;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .sweet-choice-card:nth-child(even) {
+      animation-delay: -2s;
+      animation-duration: 5s;
+    }
+
+    .sweet-choice-card:nth-child(3n) {
+      animation-delay: -1s;
+      animation-duration: 4.5s;
+    }
+
+    @keyframes floatSweet {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-15px) rotate(3deg);
+      }
+    }
+
+    .sweet-choice-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--pink);
+      transform: translateY(-20px) scale(1.05) !important;
+      animation: none;
+      box-shadow: 0 25px 50px rgba(255, 46, 99, 0.3);
+    }
+
+    .sweet-choice-emoji {
+      font-size: 4.5rem;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
+      transition: transform 0.3s;
+    }
+
+    .sweet-choice-card:hover .sweet-choice-emoji {
+      transform: scale(1.15) rotate(-5deg);
+    }
+
+    .sweet-choice-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    /* --- SECTION 4 STYLES --- */
+    #section-4 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+    }
+
+    @keyframes pulseMouth {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    .flying-sweet {
+      position: fixed;
+      font-size: 5rem;
+      z-index: 100;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+    }
+
+    /* --- SECTION 5 STYLES --- */
+    body.vibrant-holi-bg {
+      background: linear-gradient(-45deg, #FF2E63, #FFD93D, #1E90FF, #7B2CBF, #FF7F11);
+      background-size: 400% 400%;
+      animation: gradientBg 8s ease infinite;
+    }
+
+    @keyframes gradientBg {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .falling-food-item {
+      position: fixed;
+      top: -100px;
+      pointer-events: none;
+      z-index: 15;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.4));
+    }
+
+    /* --- SECTION 7: MOUSE TRAIL STYLES --- */
+    .mouse-trail-particle {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      z-index: 9998;
+      /* Below play-holi cursor but above most elements */
+      transform: translate(-50%, -50%) scale(1);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    /* --- SECTION 8: PICHKARI STYLES --- */
+    #pichkari-container {
+      position: fixed;
+      right: 20px;
+      bottom: 20%;
+      z-index: 1001;
+      cursor: none;
+      display: none;
+      opacity: 0;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.5));
+      animation: floatPichkari 3s ease-in-out infinite;
+    }
+
+    @keyframes floatPichkari {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(-15deg);
+      }
+
+      50% {
+        transform: translateY(-20px) rotate(-10deg);
+      }
+    }
+
+    .pichkari-help-text {
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-right: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      animation: pulseGlowText 2s infinite;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    @keyframes pulseGlowText {
+
+      0%,
+      100% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .pichkari-emoji {
+      font-size: 5rem;
+      transition: transform 0.1s;
+    }
+
+    .pichkari-emoji:active {
+      transform: scale(0.9) rotate(-25deg);
+    }
+
+    .water-droplet {
+      position: fixed;
+      width: 6px;
+      height: 20px;
+      border-radius: 10px;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.8;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+    }
+
+    #final-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      text-align: center;
+      color: white;
+      text-shadow: 0 5px 20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.4);
+      z-index: 2000;
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+      width: 100%;
+    }
+
+    /* --- SECTION 10 STYLES --- */
+    #section-10 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3000;
+      display: none;
+      opacity: 0;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+    }
+
+    .glass-message-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 50px 40px;
+      border-radius: 20px;
+      max-width: 90%;
+      width: 550px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .glowing-name-divyanshu {
+      display: inline-block;
+      font-weight: 800;
+      color: white;
+      font-size: 2rem;
+      margin-top: 20px;
+      padding: 10px 25px;
+      border: 3px solid transparent;
+      border-radius: 50px;
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+      background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
+        linear-gradient(45deg, #FF2E63, #FFD93D, #1E90FF, #7B2CBF, #FF2E63);
+      background-size: 200% 200%;
+      animation: glowingBorderAnim 3s ease infinite;
+    }
+
+    @keyframes glowingBorderAnim {
+
+      0%,
+      100% {
+        box-shadow: 0 0 15px #FF2E63, 0 0 30px #FFD93D;
+        background-position: 0% 50%;
+      }
+
+      50% {
+        box-shadow: 0 0 25px #1E90FF, 0 0 50px #7B2CBF, 0 0 70px #FF2E63;
+        background-position: 100% 50%;
+      }
+    }
+
+    .final-footer {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+      pointer-events: none;
+    }
+
+    /* --- SECTION 6 STYLES --- */
+    body.play-holi-mode {
+      cursor: none !important;
+    }
+
+    .gulal-blob-cursor {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 46, 99, 0.9);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.1s;
+      filter: blur(5px) drop-shadow(0 0 10px rgba(255, 46, 99, 0.5));
+      mix-blend-mode: screen;
+      display: none;
+    }
+
+    #splashCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* --- RESPONSIVE ADJUSTMENTS (ALL DEVICES) --- */
+    @media (max-width: 768px) {
+
+      /* Mobile and tablets adjustment */
+      .sweets-selection-grid {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 12px;
+      }
+
+      .sweet-choice-emoji {
+        font-size: 3.5rem;
+      }
+
+      .sweet-choice-name {
+        font-size: 1rem;
+      }
+
+      #play-holi-gui {
+        width: 95%;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        bottom: 20px;
+      }
+
+      #play-holi-gui button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+
+      .glass-message-card {
+        padding: 40px 20px;
+        width: 95%;
+      }
+
+      .final-footer {
+        font-size: 0.70rem;
+        bottom: 10px;
+        line-height: 1.4;
+        width: 95%;
+      }
+
+      #btn-play-holi {
+        font-size: 1rem;
+        padding: 12px 25px;
+        width: 80%;
+        margin: 20px auto 0;
+      }
+
+      .pichkari-help-text {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        margin-right: -10px;
+        right: 120%;
+      }
+
+      .pichkari-emoji {
+        font-size: 4rem;
+      }
+
+      /* Disable custom cursor fully on mobile touch devices for better native UX */
+      .gulal-blob-cursor {
+        display: none !important;
+      }
+
+      body.play-holi-mode {
+        cursor: auto !important;
+      }
+
+      #pichkari-container {
+        bottom: 25%;
+        right: 5px;
+      }
+
+      #mouth-prompt {
+        font-size: clamp(1.5rem, 6vw, 2.5rem);
+        padding: 0 15px;
+      }
+    }
+
+    @media (max-width: 400px) {
+
+      /* Extra small devices (like iPhone SE) */
+      .sweets-selection-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        gap: 10px;
+      }
+
+      .sweet-choice-emoji {
+        font-size: 3rem;
+      }
+
+      .glowing-name-divyanshu {
+        font-size: 1.5rem;
+        padding: 8px 15px;
+      }
+
+      #btn-to-sec3 {
+        padding: 12px 25px;
+        font-size: 1rem;
+      }
+
+      #t-welcome h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Safaris 100vh fix fallback */
+    @supports (-webkit-touch-callout: none) {
+
+      body,
+      html {
+        height: -webkit-fill-available;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <!-- CANVAS FOR PERMANENT SPLASHES -->
+    <canvas id="splashCanvas"></canvas>
+    <!-- CANVAS FOR GULAL EXPLOSIONS -->
+    <canvas id="explosionCanvas"></canvas>
+
+    <!-- PARTICLES (PETALS & GULAL) -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- SECTION 1 CONTENT -->
+    <div id="section-1">
+      <div class="intro-text-wrapper">
+        <h1 class="text-happy-holi" id="t-happy">HAPPY HOLI!</h1>
+        <div class="welcome-group" id="t-welcome">
+          <h2 class="text-welcome">Wishing you a colorful and<br>Happy Holi from</h2>
+          <span class="text-divyanshu">From</span>
+          <span class="text-divyanshu">Divyanshu</span>
+        </div>
+      </div>
+      <button id="btn-start" onclick="goToSection2()">Start the Celebration ✨</button>
+    </div>
+
+    <!-- SECTION 2: NAME INPUT -->
+    <div id="section-2" style="display: none; opacity: 0;">
+      <div class="name-card">
+        <h3 class="name-prompt">Before we start celebrating...<br>What is your name?</h3>
+        <input type="text" id="visitor-name" placeholder="Enter your beautiful name" autocomplete="off" />
+        <button id="btn-submit-name" onclick="submitName()">✨ Continue</button>
+      </div>
+    </div>
+
+    <!-- SECTION 2b: NAME DISPLAY (Sweets) -->
+    <div id="section-2b"
+      style="display: none; opacity: 0; align-items: center; justify-content: center; flex-direction: column;">
+      <h2 id="welcome-prefix" style="font-size: 2rem; opacity: 0; margin-bottom: 20px;">Nice to meet you,</h2>
+      <div id="sweet-name-container" class="sweet-name-container"></div>
+      <button id="btn-to-sec3"
+        style="opacity: 0; margin-top: 40px; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; background: linear-gradient(45deg, var(--blue), var(--green)); color: white; border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(30, 144, 255, 0.4); display: none;"
+        onclick="goToSection3()">Next Surprise 🎁</button>
+    </div>
+
+    <!-- SECTION 3: SWEET SELECTION -->
+    <div id="section-3"
+      style="display: none; opacity: 0; align-items: center; justify-content: center; flex-direction: column;">
+      <h2 class="section-title" id="sweet-prompt"
+        style="font-size: clamp(1.8rem, 4vw, 2.5rem); text-align: center; margin-bottom: 40px; font-weight: 600; line-height: 1.4; padding: 0 20px;">
+        <span id="name-placeholder"></span>!<br>What would you love to eat this Holi?
+      </h2>
+
+      <div class="sweets-selection-grid">
+        <div class="sweet-choice-card" onclick="selectSweet('Gunjiya', '🥟', event)">
+          <div class="sweet-choice-emoji">🥟</div>
+          <div class="sweet-choice-name">Gunjiya</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Thandai', '🍵', event)">
+          <div class="sweet-choice-emoji">🍵</div>
+          <div class="sweet-choice-name">Thandai</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Pakodas', '🧆', event)">
+          <div class="sweet-choice-emoji">🧆</div>
+          <div class="sweet-choice-name">Pakodas</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Jal Jeera', '🍹', event)">
+          <div class="sweet-choice-emoji">🍹</div>
+          <div class="sweet-choice-name">Jal Jeera</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Jalebi', '🥨', event)">
+          <div class="sweet-choice-emoji">🥨</div>
+          <div class="sweet-choice-name">Jalebi</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Coca-Cola', '🥤', event)">
+          <div class="sweet-choice-emoji">🥤</div>
+          <div class="sweet-choice-name">Coca-Cola</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Fruit Chat', '🥗', event)">
+          <div class="sweet-choice-emoji">🥗</div>
+          <div class="sweet-choice-name">Fruit Chat</div>
+        </div>
+        <div class="sweet-choice-card" onclick="selectSweet('Dahi Bhalla', '🍲', event)">
+          <div class="sweet-choice-emoji">🍲</div>
+          <div class="sweet-choice-name">Dahi Bhalla</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: EATING ANIMATION -->
+    <div id="section-4"
+      style="display: none; opacity: 0; align-items: center; justify-content: center; flex-direction: column;">
+      <h2 id="mouth-prompt"
+        style="font-size: clamp(2rem, 5vw, 3.5rem); text-align: center; margin-bottom: 20px; font-weight: 800; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+        Get ready... open your mouth 😄
+      </h2>
+      <div id="cartoon-mouth" style="font-size: 8rem; margin-top: 20px; animation: pulseMouth 1.5s infinite;">👄</div>
+    </div>
+
+    <!-- SECTION 6: PLAY HOLI MODE PROMPT -->
+    <div id="section-6"
+      style="display: none; opacity: 0; align-items: center; justify-content: center; flex-direction: column; position: absolute; top:0; left:0; width:100%; height:100%; z-index: 25;">
+      <h2
+        style="font-size: clamp(2rem, 5vw, 3.5rem); text-align: center; margin-bottom: 20px; font-weight: 800; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+        Ready to play? Let's throw some colors!
+      </h2>
+      <button id="btn-play-holi" onclick="startPlayHoliMode()"
+        style="padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; background: linear-gradient(45deg, var(--blue), var(--pink)); color: white; border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(255, 46, 99, 0.4); margin-top: 20px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));">
+        Lets Play Holi together
+      </button>
+    </div>
+
+    <!-- PLAY HOLI OVERLAY GUI -->
+    <div id="play-holi-gui"
+      style="display: none; opacity: 0; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1000; gap: 20px;">
+      <button onclick="clearColors()"
+        style="padding: 10px 20px; font-size: 1rem; border-radius: 30px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.4); cursor: none;">Clear
+        Colors</button>
+      <button onclick="throwMoreColors()"
+        style="padding: 10px 20px; font-size: 1rem; border-radius: 30px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.4); cursor: none;">More
+        Colors</button>
+    </div>
+
+    <!-- SECTION 8: PICHKARI & FINAL MESSAGE -->
+    <div id="pichkari-container" onclick="sprayPichkari()">
+      <div class="pichkari-help-text">Use pichkari to throw colour 💧</div>
+      <div class="pichkari-emoji">🔫</div>
+    </div>
+
+    <div id="final-message">We just played virtual<br>Holi together!</div>
+
+    <!-- SECTION 10: PERSONAL MESSAGE -->
+    <div id="section-10">
+      <div class="glass-message-card">
+        <h3
+          style="font-size: clamp(1.8rem, 4vw, 2.2rem); color: #FFD93D; margin-bottom: 25px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+          Happy Holi, <span id="card-name-placeholder"></span>!
+        </h3>
+        <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 30px; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+          May your life be as colorful as this festival, filled with happiness, success, and sweetness.<br><br>
+          Enjoy every color of life and keep smiling.
+        </p>
+        <div style="font-size: 1.1rem; text-align: right; width: 100%; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+          — With warm wishes,<br>
+          <span class="glowing-name-divyanshu">Divyanshu</span>
+        </div>
+      </div>
+
+      <!-- FINAL FOOTER -->
+      <div class="final-footer">
+        Crafted with Colors & Code by Divyanshu
+      </div>
+    </div>
+
+    <!-- CUSTOM CURSOR -->
+    <div class="gulal-blob-cursor" id="custom-cursor"></div>
+
+  </div>
+  <button id="music-toggle" onclick="toggleMusic()">🔇</button>
+  </div>
+
+  <!-- AUDIO ELEMENT (Subtle instrumental) -->
+  <!-- Using a placeholder royalty-free festive track (santoor/flute style) -->
+  <audio id="bg-music" loop>
+    <source
+      src="https://cdn.pixabay.com/download/audio/2022/02/22/audio_d0a13f69d2.mp3?filename=indian-flute-118830.mp3"
+      type="audio/mpeg">
+  </audio>
+
+  <!-- EASTER EGG DHOL SOUND -->
+  <audio id="dhol-effect" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/11/04/audio_3d1dfbedd6.mp3?filename=dhol-loop-1-125026.mp3"
+      type="audio/mpeg">
+  </audio>
+
+  <script>
+    /*********************************************
+     * 1. MUSIC CONTROL
+     *********************************************/
+    const audio = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-toggle');
+    let isPlaying = false;
+
+    function toggleMusic() {
+      if (isPlaying) {
+        audio.pause();
+        musicBtn.innerHTML = '🔇';
+      } else {
+        audio.play();
+        musicBtn.innerHTML = '🔊';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    // Try to autoplay on first user interaction 
+    document.body.addEventListener('click', () => {
+      if (!isPlaying) toggleMusic();
+    }, { once: true });
+
+
+    /*********************************************
+     * 2. CANVAS GULAL EXPLOSIONS
+     *********************************************/
+    const canvas = document.getElementById('explosionCanvas');
+    const ctx = canvas.getContext('2d');
+    const splashCanvas = document.getElementById('splashCanvas');
+    const splashCtx = splashCanvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    const colors = ['#FF2E63', '#FFD93D', '#1E90FF', '#7B2CBF', '#FF7F11', '#06D6A0'];
+
+    function resize() {
+      width = canvas.width = splashCanvas.width = window.innerWidth;
+      height = canvas.height = splashCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class ExplosionParticle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        // Explosive outward velocity
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 15 + 5;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.friction = 0.92; // slows down
+        this.gravity = 0.05; // falls slightly
+        this.size = Math.random() * 20 + 10;
+        this.opacity = 1;
+        this.wobble = Math.random() * 0.1;
+        this.wobbleSpeed = Math.random() * 0.1;
+      }
+
+      update() {
+        this.vx *= this.friction;
+        this.vy *= this.friction;
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy + Math.sin(this.wobble) * 2;
+        this.wobble += this.wobbleSpeed;
+        this.opacity -= 0.008; // fade out gradually
+        this.size += 0.2; // expand like a cloud
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+
+        // Create soft powder gradient
+        const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+        grad.addColorStop(0, this.color);
+        grad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function createExplosion(x, y) {
+      const numParticles = 40;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < numParticles; i++) {
+        particles.push(new ExplosionParticle(x, y, color));
+      }
+    }
+
+    function triggerMassiveExplosions() {
+      // Trigger several explosions at once around the center
+      setTimeout(() => createExplosion(width * 0.3, height * 0.4), 100);
+      setTimeout(() => createExplosion(width * 0.7, height * 0.6), 400);
+      setTimeout(() => createExplosion(width * 0.5, height * 0.5), 800);
+      setTimeout(() => createExplosion(width * 0.2, height * 0.7), 1200);
+      setTimeout(() => createExplosion(width * 0.8, height * 0.3), 1500);
+    }
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, width, height);
+      particles = particles.filter(p => p.opacity > 0);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateCanvas);
+    }
+    animateCanvas();
+
+
+    /*********************************************
+     * 3. BACKGROUND DRIFTING PARTICLES
+     *********************************************/
+    const particlesContainer = document.getElementById('particles');
+    const petals = ['🏵️', '🌸', '🌼', '🌺'];
+
+    function createFloatingElement() {
+      const el = document.createElement('div');
+
+      // Randomly pick between petal or gulal dust
+      if (Math.random() > 0.5) {
+        // Petal
+        el.className = 'petal';
+        el.innerText = petals[Math.floor(Math.random() * petals.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+      } else {
+        // Gulal dust
+        el.className = 'gulal';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.width = (Math.random() * 20 + 10) + 'px';
+        el.style.height = el.style.width;
+        el.style.animationDuration = (Math.random() * 8 + 6) + 's';
+      }
+
+      particlesContainer.appendChild(el);
+
+      // Cleanup
+      setTimeout(() => {
+        el.remove();
+      }, 10000);
+    }
+
+    // Initially spawn some
+    for (let i = 0; i < 30; i++) {
+      setTimeout(createFloatingElement, Math.random() * 3000);
+    }
+    // Keep spawning
+    setInterval(createFloatingElement, 500);
+
+
+    /*********************************************
+     * 4. GSAP TIMELINE FOR SECTION 1
+     *********************************************/
+    window.onload = () => {
+      const tl = gsap.timeline();
+
+      // 0. Dark pause, then explosions!
+      tl.add(() => {
+        triggerMassiveExplosions();
+      }, "+=0.5");
+
+      // 1. "HAPPY HOLI!" crashes in
+      tl.to("#t-happy", {
+        duration: 1.5,
+        opacity: 1,
+        scale: 1,
+        ease: "elastic.out(1, 0.5)"
+      }, "+=0.2");
+
+      // 2. "HAPPY HOLI!" fades and scales up out of view
+      tl.to("#t-happy", {
+        duration: 1,
+        opacity: 0,
+        scale: 2,
+        filter: "blur(10px)",
+        ease: "power2.inOut"
+      }, "+=1.5");
+
+      // 3. Trigger more explosions behind the welcome text
+      tl.add(() => {
+        createExplosion(width * 0.5, height * 0.5);
+        createExplosion(width * 0.3, height * 0.5);
+        createExplosion(width * 0.7, height * 0.5);
+      }, "-=0.2");
+
+      // 4. "Welcome to Rang Utsav with Divyanshu" fades in from bottom
+      gsap.set("#t-welcome", { y: 50, opacity: 0 });
+      tl.to("#t-welcome", {
+        duration: 1.5,
+        y: 0,
+        opacity: 1,
+        ease: "power3.out"
+      });
+
+      // 5. Show start button
+      tl.to("#btn-start", {
+        duration: 0.8,
+        opacity: 1,
+        y: 0,
+        pointerEvents: "auto",
+        ease: "power2.out"
+      }, "-=0.5");
+    };
+
+    /*********************************************
+     * 5. NAVIGATION / SECTION 2 (NAME INPUT)
+     *********************************************/
+    let visitorName = "";
+
+    function goToSection2() {
+      // Fade out section 1
+      gsap.to("#section-1", {
+        opacity: 0,
+        y: -50,
+        duration: 0.8,
+        onComplete: () => {
+          document.getElementById('section-1').style.display = 'none';
+          // Show section 2
+          document.getElementById('section-2').style.display = 'flex';
+          gsap.to("#section-2", { opacity: 1, duration: 0.5 });
+          gsap.to(".name-card", { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.2)" });
+          document.getElementById('visitor-name').focus();
+        }
+      });
+    }
+
+    document.getElementById('visitor-name').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') submitName();
+    });
+
+    function submitName() {
+      const input = document.getElementById('visitor-name');
+      if (input.value.trim() === "") {
+        gsap.to(".name-card", { x: [-10, 10, -10, 10, 0], duration: 0.4 });
+        return;
+      }
+      visitorName = input.value.trim().toUpperCase();
+
+      // Massive explosion transition
+      triggerMassiveExplosions();
+      createExplosion(width * 0.5, height * 0.5); // extra huge one in center
+
+      gsap.to("#section-2", {
+        opacity: 0,
+        scale: 1.2,
+        duration: 0.6,
+        onComplete: () => {
+          document.getElementById('section-2').style.display = 'none';
+          showSweetName();
+        }
+      });
+    }
+
+    /*********************************************
+     * 6. SECTION 2b: SWEETS NAME ANIMATION
+     *********************************************/
+    function showSweetName() {
+      const sec2b = document.getElementById('section-2b');
+      sec2b.style.display = 'flex';
+      gsap.to(sec2b, { opacity: 1, duration: 0.5 });
+
+      const container = document.getElementById('sweet-name-container');
+      container.innerHTML = '';
+
+      const sweets = ['🥟', '🟡', '🥨', '🥛', '🧁']; // Gujiya, Laddoo, Jalebi, Thandai, Sweet
+
+      // Create DOM elements for each letter
+      visitorName.split('').forEach((char, index) => {
+        if (char === ' ') {
+          const space = document.createElement('div');
+          space.style.width = '30px';
+          container.appendChild(space);
+          return;
+        }
+
+        const box = document.createElement('div');
+        box.className = 'sweet-letter-box';
+
+        // Background splash
+        const splash = document.createElement('div');
+        splash.className = 'letter-splash';
+        splash.style.background = `radial-gradient(circle, ${colors[index % colors.length]}, transparent)`;
+
+        // Sweet emoji
+        const emoji = document.createElement('div');
+        emoji.className = 'sweet-emoji-bg';
+        emoji.innerText = sweets[index % sweets.length];
+
+        // Actual Letter
+        const text = document.createElement('div');
+        text.className = 'sweet-letter-char';
+        text.innerText = char;
+
+        box.appendChild(splash);
+        box.appendChild(emoji);
+        box.appendChild(text);
+        container.appendChild(box);
+
+        // Initial state for GSAP
+        gsap.set(box, { scale: 0, opacity: 0, y: 50, rotation: -30 + Math.random() * 60 });
+        gsap.set(splash, { scale: 0 });
+      });
+
+      // Animate them in sequentially
+      const tl = gsap.timeline();
+
+      tl.to("#welcome-prefix", {
+        opacity: 1, y: 0, duration: 0.8, ease: "power2.out"
+      }, "+=0.3");
+
+      const boxes = document.querySelectorAll('.sweet-letter-box');
+      boxes.forEach((box, i) => {
+        const splash = box.querySelector('.letter-splash');
+
+        tl.add(() => {
+          // Add a canvas particle explosion exactly where this letter drops
+          const rect = box.getBoundingClientRect();
+          createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }, `-=${0.1}`); // overlap slightly with previous animation
+
+        tl.to(box, {
+          scale: 1, opacity: 1, y: 0, rotation: 0,
+          duration: 0.6, ease: "back.out(2)"
+        }, "-=0.2");
+
+        tl.to(splash, {
+          scale: 1, duration: 0.4, ease: "power2.out"
+        }, "-=0.4");
+      });
+
+      // Show exactly "Next Surprise" button
+      tl.to("#btn-to-sec3", {
+        display: "block",
+        opacity: 1,
+        y: -10,
+        duration: 0.8,
+        ease: "power2.out"
+      }, "+=0.5");
+    }
+
+    /*********************************************
+     * 7. SECTION 3: SWEET SELECTION
+     *********************************************/
+    let chosenSweetName = "";
+    let chosenSweetEmoji = "";
+
+    function goToSection3() {
+      // Set the name in the prompt
+      document.getElementById('name-placeholder').innerText = visitorName;
+      document.getElementById('welcome-prefix').innerText = "Nice to meet you,";
+
+      gsap.to("#section-2b", {
+        opacity: 0,
+        scale: 0.9,
+        duration: 0.6,
+        onComplete: () => {
+          document.getElementById('section-2b').style.display = 'none';
+
+          const sec3 = document.getElementById('section-3');
+          sec3.style.display = 'flex';
+
+          gsap.to(sec3, { opacity: 1, duration: 0.6 });
+
+          // Stagger animate the sweet cards in
+          // Use fromTo to strictly enforce opacity 0 to 1 and fix CSS animation conflicts
+          gsap.fromTo(".sweet-choice-card", {
+            y: 100,
+            opacity: 0,
+            rotation: 15
+          }, {
+            y: 0,
+            opacity: 1,
+            rotation: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "back.out(1.5)",
+            clearProps: "transform" // Critical to let CSS floatSweet animation take over
+          });
+        }
+      });
+    }
+
+    function selectSweet(name, emoji, event) {
+      chosenSweetName = name;
+      chosenSweetEmoji = emoji;
+
+      // Animate the clicked card
+      const targetCard = event.currentTarget;
+
+      // Explosion on the selected sweet
+      const rect = targetCard.getBoundingClientRect();
+      const startX = rect.left + rect.width / 2;
+      const startY = rect.top + rect.height / 2;
+      createExplosion(startX, startY);
+
+      // Hide all other cards
+      gsap.to(".sweet-choice-card", {
+        scale: 0,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.05,
+        ease: "back.in(1.5)",
+        onComplete: () => {
+          document.getElementById('section-3').style.display = 'none';
+          playEatingAnimation(startX, startY);
+        }
+      });
+    }
+
+    /*********************************************
+     * 8. SECTION 4: EATING ANIMATION
+     *********************************************/
+    function playEatingAnimation(startX, startY) {
+      const sec4 = document.getElementById('section-4');
+      sec4.style.display = 'flex';
+
+      // Show "Open your mouth" prompt
+      gsap.to(sec4, { opacity: 1, duration: 0.5 });
+
+      // Create a flying sweet element starting from where they clicked
+      const flyingObj = document.createElement('div');
+      flyingObj.className = 'flying-sweet';
+      flyingObj.innerText = chosenSweetEmoji;
+      flyingObj.style.left = startX + 'px';
+      flyingObj.style.top = startY + 'px';
+      flyingObj.style.transform = 'translate(-50%, -50%) scale(1)';
+      document.body.appendChild(flyingObj);
+
+      const tl = gsap.timeline();
+
+      // Setup the flying sweet
+      gsap.set(flyingObj, { xPercent: -50, yPercent: -50, scale: 0.8 });
+
+      // Wait a moment for them to read the prompt and open mouth
+      tl.add(() => { }, "+=1.5");
+
+      // Fly the sweet to the center (the mouth) and rapidly scale it up
+      tl.to(flyingObj, {
+        left: '50%',
+        top: '50%',
+        scale: 4,
+        rotation: 360,
+        duration: 1.2,
+        ease: "power2.in" // Accelerates toward camera
+      });
+
+      // Sweet "enters" mouth (disappears)
+      tl.to(flyingObj, {
+        scale: 0,
+        opacity: 0,
+        duration: 0.2,
+        ease: "back.in(2)",
+        onComplete: () => {
+          flyingObj.remove();
+
+          // Confetti/Splash explosion at center when eaten
+          for (let i = 0; i < 3; i++) {
+            setTimeout(() => createExplosion(window.innerWidth / 2, window.innerHeight / 2), i * 100);
+          }
+
+          // Trigger screen shake for impact
+          gsap.fromTo("body",
+            { x: -10, y: 10 },
+            { x: 0, y: 0, duration: 0.4, ease: "rough({strength: 2, points: 10})" }
+          );
+        }
+      });
+
+      // Clear section 4
+      tl.to(sec4, {
+        opacity: 0,
+        duration: 0.5,
+        delay: 0.5,
+        onComplete: () => {
+          sec4.style.display = 'none';
+          startFoodShower();
+        }
+      });
+    }
+
+    /*********************************************
+     * 9. SECTION 5: FOOD SHOWER CELEBRATION
+     *********************************************/
+    function startFoodShower() {
+      // Background becomes vibrant Holi gradient
+      document.body.classList.add('vibrant-holi-bg');
+
+      const numSweets = 40;
+      let count = 0;
+
+      const showerInterval = setInterval(() => {
+        if (count >= numSweets) {
+          clearInterval(showerInterval);
+
+          // Wait briefly, then prompt for next stage
+          setTimeout(() => {
+            const sec6 = document.getElementById('section-6');
+            sec6.style.display = 'flex';
+            gsap.to(sec6, { opacity: 1, duration: 1 });
+          }, 3500);
+          return;
+        }
+
+        const foodObj = document.createElement('div');
+        foodObj.className = 'falling-food-item';
+        foodObj.innerText = chosenSweetEmoji;
+
+        // Random horizontal start
+        const startX = Math.random() * window.innerWidth;
+        const driftX = (Math.random() - 0.5) * 300; // Left or right drift
+
+        // Random scale (sizes range from smaller to huge)
+        const scale = 0.8 + Math.random() * 2.5;
+        // Adjust font size based on scale to avoid transform pixelation
+        foodObj.style.fontSize = (2 + scale) + 'rem';
+        foodObj.style.left = startX + 'px';
+
+        document.body.appendChild(foodObj);
+
+        // Let it fall to random depths near the bottom of the screen to simulate floor depth
+        const fallDepth = window.innerHeight - 50 - (Math.random() * 150);
+
+        // GSAP fall animation with rotation and BOUNCE
+        gsap.to(foodObj, {
+          y: fallDepth,
+          x: `+=${driftX}`,
+          rotation: Math.random() * 720 - 360,
+          duration: 3 + Math.random() * 1.5,
+          ease: "bounce.out",
+          onComplete: () => {
+            // Fade out after hitting the floor and bouncing
+            gsap.to(foodObj, {
+              opacity: 0,
+              duration: 1,
+              delay: 0.5 + Math.random(),
+              onComplete: () => foodObj.remove()
+            });
+          }
+        });
+
+        // Blast Gulal Confetti particles!
+        if (count % 4 === 0) {
+          createExplosion(startX, Math.random() * window.innerHeight * 0.4 + 100);
+        }
+
+        count++;
+      }, 100);
+    }
+
+    /*********************************************
+     * 10. SECTION 6: PLAY HOLI MODE
+     *********************************************/
+    let isPlayHoliMode = false;
+    const customCursor = document.getElementById('custom-cursor');
+
+    function startPlayHoliMode() {
+      // Hide section 6 prompt
+      gsap.to("#section-6", {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          document.getElementById('section-6').style.display = 'none';
+        }
+      });
+
+      // Show Play Holi internal GUI
+      const gui = document.getElementById('play-holi-gui');
+      gui.style.display = 'flex';
+      gsap.to(gui, { opacity: 1, duration: 1, delay: 0.5 });
+
+      // SHOW PICHKARI (SECTION 8)
+      const pichkari = document.getElementById('pichkari-container');
+      pichkari.style.display = 'block';
+      gsap.to(pichkari, { opacity: 1, duration: 1, delay: 1 });
+
+      // Activate Canvas interaction Mode
+      isPlayHoliMode = true;
+      document.body.classList.add('play-holi-mode');
+      customCursor.style.display = 'block';
+    }
+
+    // Cursor Follower logic
+    let lastTrailTime = 0;
+    document.addEventListener('mousemove', (e) => {
+      // --- SECTION 7: MOUSE TRAIL EFFECT ---
+      const now = Date.now();
+      if (now - lastTrailTime > 40) { // Throttle to ~25fps for performance
+        lastTrailTime = now;
+
+        const particle = document.createElement('div');
+        particle.className = 'mouse-trail-particle';
+
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 8 + 4; // 4px to 12px
+
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.background = color;
+        particle.style.left = e.clientX + 'px';
+        particle.style.top = e.clientY + 'px';
+        particle.style.boxShadow = `0 0 ${size / 2}px ${color}`;
+        document.body.appendChild(particle);
+
+        // Animate drifting slightly downward and fading
+        setTimeout(() => {
+          const driftX = (Math.random() - 0.5) * 40;
+          const driftY = (Math.random() - 0.5) * 40 + 20; // gravity drift
+          particle.style.transform = `translate(calc(-50% + ${driftX}px), calc(-50% + ${driftY}px)) scale(0)`;
+          particle.style.opacity = '0';
+        }, 30); // small delay to allow DOM render before transition
+
+        setTimeout(() => particle.remove(), 850);
+      }
+
+      // --- SECTION 6: PLAY HOLI MODE CURSOR ---
+      if (!isPlayHoliMode) return;
+      customCursor.style.left = e.clientX + 'px';
+      customCursor.style.top = e.clientY + 'px';
+    });
+
+    // Clicking anywhere logic
+    document.addEventListener('mousedown', handleScreenInteraction);
+
+    // Add touch support for massive mobile interactions
+    document.addEventListener('touchstart', (e) => {
+      // Prevent double firing of both touch and click, only if it is touching the screen for color
+      if (e.target.tagName !== 'BUTTON' && !e.target.closest('#pichkari-container')) {
+        handleScreenInteraction(e.touches[0]);
+      }
+    }, { passive: true });
+
+    function handleScreenInteraction(e) {
+      // Don't draw color splash if clicking a button or the pichkari
+      if (!isPlayHoliMode
+        || e.target.tagName === 'BUTTON'
+        || e.target.closest('#pichkari-container')) {
+        return;
+      }
+
+      throwColor(e.clientX, e.clientY);
+    }
+
+    function throwColor(x, y) {
+      // Pick random color
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      // Ensure cursor color shifts dynamically
+      customCursor.style.background = color;
+
+      // Action 1: Create physical explosion
+      createExplosion(x, y);
+
+      // Action 2: Draw permanent stain/splash
+      drawPermanentSplash(x, y, color);
+    }
+
+    function drawPermanentSplash(x, y, color) {
+      splashCtx.save();
+      // 'screen' makes overlaid colors vibrant and luminous
+      splashCtx.globalCompositeOperation = "screen";
+      splashCtx.fillStyle = color;
+      splashCtx.globalAlpha = 0.8;
+
+      // Central blob
+      splashCtx.beginPath();
+      splashCtx.arc(x, y, Math.random() * 30 + 20, 0, Math.PI * 2);
+      splashCtx.fill();
+
+      // Peripheral splatters
+      for (let i = 0; i < 8; i++) {
+        const randAngle = Math.random() * Math.PI * 2;
+        const randDist = Math.random() * 80 + 20;
+        const offsetX = Math.cos(randAngle) * randDist;
+        const offsetY = Math.sin(randAngle) * randDist;
+
+        splashCtx.beginPath();
+        splashCtx.arc(x + offsetX, y + offsetY, Math.random() * 15 + 5, 0, Math.PI * 2);
+        splashCtx.fill();
+      }
+      splashCtx.restore();
+    }
+
+    function clearColors() {
+      // Clear permanent splashes
+      splashCtx.clearRect(0, 0, splashCanvas.width, splashCanvas.height);
+      // Optional: blast one big center explosion to celebrate clean slate
+      createExplosion(window.innerWidth / 2, window.innerHeight / 2);
+    }
+
+    function throwMoreColors() {
+      // Automatically throw 5 random splashes across the screen
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const randX = Math.random() * window.innerWidth;
+          const randY = Math.random() * window.innerHeight;
+          throwColor(randX, randY);
+        }, i * 150);
+      }
+    }
+
+    /*********************************************
+     * 11. SECTION 8: PICHKARI INTERACTION
+     *********************************************/
+    function sprayPichkari() {
+      // Set random vibrant color for the water spray
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      const pichkari = document.getElementById('pichkari-container');
+      const rect = pichkari.getBoundingClientRect();
+      const startX = rect.left; // Nozzle approximate X
+      const startY = rect.top + rect.height / 3; // Nozzle approximate Y
+
+      // Blast 40 water droplets across screen
+      for (let i = 0; i < 40; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'water-droplet';
+        drop.style.background = color;
+        // Shadow matches color
+        drop.style.boxShadow = `0 0 10px ${color}`;
+
+        drop.style.left = startX + 'px';
+        drop.style.top = startY + 'px';
+        document.body.appendChild(drop);
+
+        // Random spray angle towards the left and center
+        const endX = Math.random() * window.innerWidth * 0.8;
+        const endY = Math.random() * window.innerHeight;
+
+        // Rapid spray curve
+        gsap.to(drop, {
+          x: endX - startX,
+          y: endY - startY,
+          rotation: Math.atan2(endY - startY, endX - startX) * (180 / Math.PI),
+          duration: 0.4 + Math.random() * 0.3,
+          ease: "power2.out",
+          onComplete: () => {
+            // Droplets slide / drip downward
+            gsap.to(drop, {
+              y: `+=${window.innerHeight}`,
+              opacity: 0,
+              duration: 1.5 + Math.random(),
+              ease: "power1.in",
+              onComplete: () => drop.remove()
+            });
+            // Add canvas SPLASH
+            drawPermanentSplash(endX, endY, color);
+          }
+        });
+      }
+
+      // Show Final Message: "We just played virtual Holi together!"
+      const msg = document.getElementById('final-message');
+      if (msg.style.display === 'none' || msg.style.display === '') {
+        msg.style.display = 'block';
+        gsap.to(msg, {
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          onComplete: () => {
+            // Let them read the "We just played holi together" for 3.5s, then show Divyanshu's Card
+            setTimeout(showDivyanshuMessage, 3500);
+          }
+        });
+      }
+    }
+
+    /*********************************************
+     * 13. SECTION 10: PERSONAL MESSAGE HTML CARD
+     *********************************************/
+    function showDivyanshuMessage() {
+      // Hide Previous GUI/mode
+      isPlayHoliMode = false;
+      document.body.classList.remove('play-holi-mode');
+      document.getElementById('custom-cursor').style.display = 'none';
+      document.getElementById('play-holi-gui').style.display = 'none';
+      document.getElementById('pichkari-container').style.display = 'none';
+
+      // Fade out the final message
+      gsap.to("#final-message", {
+        opacity: 0, duration: 1, onComplete: () => {
+          document.getElementById('final-message').style.display = 'none';
+        }
+      });
+
+      // Generate extra background aesthetics (flowers and particles) specifically for the card
+      for (let i = 0; i < 35; i++) {
+        setTimeout(() => createFloatingElement(), i * 100);
+      }
+
+      // Setup the Name
+      document.getElementById('card-name-placeholder').innerText = visitorName || 'Friend';
+
+      // Show Section 10 (Glassmorphism card)
+      const sec10 = document.getElementById('section-10');
+      sec10.style.display = 'flex';
+
+      gsap.fromTo(sec10,
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 2, ease: "back.out(1.2)", delay: 1 }
+      );
+    }
+
+    /*********************************************
+     * 12. SECTION 9: HIDDEN EASTER EGG (HOLI)
+     *********************************************/
+    let easterEggCode = "";
+    document.addEventListener('keydown', (e) => {
+      // Ignore if typing inside the name input field
+      if (e.target.tagName === 'INPUT') return;
+
+      easterEggCode += e.key.toUpperCase();
+      // Keep only last 4 characters
+      if (easterEggCode.length > 4) {
+        easterEggCode = easterEggCode.substring(easterEggCode.length - 4);
+      }
+
+      if (easterEggCode === "HOLI") {
+        triggerEasterEgg();
+        easterEggCode = ""; // reset
+      }
+    });
+
+    function triggerEasterEgg() {
+      // 1. Play Dhol sound
+      const dhol = document.getElementById('dhol-effect');
+      if (dhol) {
+        dhol.currentTime = 0;
+        dhol.volume = 1.0;
+        dhol.play().catch(e => console.log("Audio play blocked by browser:", e));
+      }
+
+      // 2. Fireworks animation & Massive color explosion
+      // Continuous explosions for 4 seconds
+      const explosionInterval = setInterval(() => {
+        triggerMassiveExplosions();
+        // and some random screen clicks for splatters
+        throwColor(Math.random() * window.innerWidth, Math.random() * window.innerHeight);
+      }, 400);
+
+      setTimeout(() => clearInterval(explosionInterval), 5000);
+
+      // 3. Confetti storm
+      for (let i = 0; i < 300; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'mouse-trail-particle';
+        conf.style.zIndex = '3000';
+        conf.style.opacity = '1';
+
+        const size = Math.random() * 15 + 5;
+        conf.style.width = size + 'px';
+        conf.style.height = size + 'px';
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.background = color;
+        conf.style.boxShadow = `0 0 ${size / 2}px ${color}`;
+
+        conf.style.left = (Math.random() * window.innerWidth) + 'px';
+        conf.style.top = '-50px';
+
+        document.body.appendChild(conf);
+
+        gsap.to(conf, {
+          y: window.innerHeight + 100,
+          x: `+=${(Math.random() - 0.5) * 500}`,
+          rotation: Math.random() * 720,
+          duration: 2 + Math.random() * 4,
+          ease: 'power1.in',
+          onComplete: () => conf.remove()
+        });
+      }
+
+      // 4. Display text: "Unlock the Holi surprise!"
+      const msg = document.createElement('div');
+      msg.innerHTML = "Unlock the Holi surprise!";
+      msg.style.position = 'fixed';
+      msg.style.top = '50%';
+      msg.style.left = '50%';
+      msg.style.transform = 'translate(-50%, -50%) scale(0.1)';
+      msg.style.fontSize = 'clamp(3rem, 7vw, 6rem)';
+      msg.style.fontWeight = '900';
+      msg.style.textAlign = 'center';
+      msg.style.color = 'white';
+      msg.style.textShadow = '0 5px 30px rgba(0,0,0,0.9), 0 0 50px #FF2E63, 0 0 100px #1E90FF';
+      msg.style.zIndex = '4000';
+      msg.style.pointerEvents = 'none';
+      msg.style.opacity = '0';
+      msg.style.width = '100%';
+      document.body.appendChild(msg);
+
+      gsap.to(msg, {
+        scale: 1,
+        opacity: 1,
+        rotation: -5 + Math.random() * 10,
+        duration: 1.5,
+        ease: "elastic.out(1, 0.4)",
+        onComplete: () => {
+          gsap.to(msg, {
+            scale: 1.2,
+            opacity: 0,
+            duration: 1,
+            delay: 4,
+            onComplete: () => msg.remove()
+          });
+        }
+      });
+    }
+
+  </script>
+</body>
+
+</html>
