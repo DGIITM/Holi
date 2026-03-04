@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rang Utsav – Celebrating Holi with Divyanshu</title>
+  <title>Rang Utsav – Celebrating Holi with Simranjeet</title>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Samarkan&display=swap"
     rel="stylesheet">
@@ -107,7 +107,7 @@
       margin-top: -20px;
     }
 
-    .text-divyanshu {
+    .text-simranjeet {
       font-size: clamp(3rem, 7vw, 6rem);
       font-weight: 800;
       background: linear-gradient(90deg, var(--purple), var(--pink), var(--orange));
@@ -641,7 +641,7 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
     }
 
-    .glowing-name-divyanshu {
+    .glowing-name-simranjeet {
       display: inline-block;
       font-weight: 800;
       color: white;
@@ -807,7 +807,7 @@
         font-size: 3rem;
       }
 
-      .glowing-name-divyanshu {
+      .glowing-name-simranjeet {
         font-size: 1.5rem;
         padding: 8px 15px;
       }
@@ -850,8 +850,8 @@
         <h1 class="text-happy-holi" id="t-happy">HAPPY HOLI!</h1>
         <div class="welcome-group" id="t-welcome">
           <h2 class="text-welcome">Wishing you a colorful and<br>Happy Holi from</h2>
-          <span class="text-divyanshu">From</span>
-          <span class="text-divyanshu">Divyanshu</span>
+          <span class="text-simranjeet">From</span>
+          <span class="text-simranjeet">Simranjeet</span>
         </div>
       </div>
       <button id="btn-start" onclick="goToSection2()">Start the Celebration ✨</button>
@@ -975,13 +975,13 @@
         </p>
         <div style="font-size: 1.1rem; text-align: right; width: 100%; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">
           — With warm wishes,<br>
-          <span class="glowing-name-divyanshu">Divyanshu</span>
+          <span class="glowing-name-simranjeet">Simranjeet</span>
         </div>
       </div>
 
       <!-- FINAL FOOTER -->
       <div class="final-footer">
-        Crafted with Colors & Code by Divyanshu
+        Crafted with Colors & Code by Simranjeet
       </div>
     </div>
 
@@ -1202,7 +1202,7 @@
         createExplosion(width * 0.7, height * 0.5);
       }, "-=0.2");
 
-      // 4. "Welcome to Rang Utsav with Divyanshu" fades in from bottom
+      // 4. "Welcome to Rang Utsav with Simranjeet" fades in from bottom
       gsap.set("#t-welcome", { y: 50, opacity: 0 });
       tl.to("#t-welcome", {
         duration: 1.5,
@@ -1776,8 +1776,8 @@
           duration: 2,
           ease: "power2.out",
           onComplete: () => {
-            // Let them read the "We just played holi together" for 3.5s, then show Divyanshu's Card
-            setTimeout(showDivyanshuMessage, 3500);
+            // Let them read the "We just played holi together" for 3.5s, then show Simranjeet's Card
+            setTimeout(showSimranjeetMessage, 3500);
           }
         });
       }
@@ -1786,7 +1786,7 @@
     /*********************************************
      * 13. SECTION 10: PERSONAL MESSAGE HTML CARD
      *********************************************/
-    function showDivyanshuMessage() {
+    function showSimranjeetMessage() {
       // Hide Previous GUI/mode
       isPlayHoliMode = false;
       document.body.classList.remove('play-holi-mode');
